@@ -22,8 +22,8 @@ contract SupplyChainContract {
         uint[] estimatedDeliveryTimes; // مصفوفة من طوابع زمنية تمثل تواريخ التوصيل المقدرة (بداية ونهاية)
         uint actualDeliveryTime; // الوقت الفعلي للتوصيل كـ uint (طابع زمني)
         uint purchaseOrderStatus; // حالة الطلب (0 = In Progress, 1 = Delivered)
-        bytes32 sellerAddress; // عنوان البائع كـ bytes32
-        bytes32 buyerAddress; // عنوان المشتري كـ bytes32
+        string sellerAddress; // عنوان البائع كـ bytes32
+        string buyerAddress; // عنوان المشتري كـ bytes32
     }
 
     // خريطة لتخزين العقود باستخدام العنوان الفريد لكل عقد
@@ -72,8 +72,8 @@ contract SupplyChainContract {
         uint totalBuyerPayment,
         uint totalTransportPayment,
         uint[] memory estimatedDeliveryTimes,
-        bytes32 sellerAddress,
-        bytes32 buyerAddress,
+        string memory sellerAddress,
+        string memory buyerAddress,
         bytes32[] memory itemNames, // أسماء المواد الخام
         uint[] memory quantities, // الكميات
         string[] memory options // الخيارات كنص واحد لكل عنصر
