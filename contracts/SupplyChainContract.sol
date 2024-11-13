@@ -46,9 +46,24 @@ contract SupplyChainContract {
         _;
     }
 
+    // أحداث
+    event ContractCreated(
+        address indexed contractAddress,
+        uint purchaseOrderId,
+        uint transportOrderId,
+        bytes32 sellerShortId,
+        bytes32 buyerShortId,
+        bytes32 transporterId
+    );
+
+    event ContractDelivered(
+        address indexed contractAddress,
+        uint actualDeliveryTime
+    );
+
     // إضافة عقد جديد مع العناصر (فقط الشركة يمكنها إنشاء العقد)
+    //address contractAddress, حذفته من اني استقبله
     function createContract(
-        address contractAddress,
         uint purchaseOrderId,
         uint transportOrderId,
         bytes32 sellerShortId,
@@ -63,6 +78,9 @@ contract SupplyChainContract {
         uint[] memory quantities, // الكميات
         string[] memory options // الخيارات كنص واحد لكل عنصر
     ) public onlyCompany {
+        // توليد العنوان الفريد للعقد باستخدام address(this) أو msg.sender
+        address contractAddress = address(this); // أو يمكن أن يكون msg.sender في حالة عقد متعدد الأطراف
+
         // إنشاء العقد الجديد
         Contract storage newContract = contracts[contractAddress];
         newContract.purchaseOrderId = purchaseOrderId;
@@ -87,6 +105,16 @@ contract SupplyChainContract {
             // إضافة العنصر المكتمل إلى العقد
             newContract.items.push(newItem);
         }
+
+        // استدعاء حدث ContractCreated بعد إنشاء العقد
+        emit ContractCreated(
+            contractAddress,
+            purchaseOrderId,
+            transportOrderId,
+            sellerShortId,
+            buyerShortId,
+            transporterId
+        );
     }
 
     // تحديث حالة الطلب إلى "تم التوصيل" وتعيين التاريخ الفعلي (فقط الشركة يمكنها تحديث الحالة)
@@ -97,6 +125,9 @@ contract SupplyChainContract {
         Contract storage existingContract = contracts[contractAddress];
         existingContract.purchaseOrderStatus = 1; // تحديث الحالة إلى "Delivered"
         existingContract.actualDeliveryTime = actualDeliveryTime; // تعيين التاريخ الفعلي للتوصيل
+
+        // استدعاء حدث ContractDelivered بعد تحديث الحالة
+        emit ContractDelivered(contractAddress, actualDeliveryTime);
     }
 
     // استرجاع تفاصيل العقد حسب العنوان
